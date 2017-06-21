@@ -17,7 +17,7 @@ SWARM_NODE_ID=$(ssh ec2-user@$IP "docker info --format '{{.Swarm.NodeID}}'")
 echo "NodeID: $SWARM_NODE_ID"
 
 echo "Setting node to availability: drain"
-ssh `make access-manager-instance` "docker node update --availability drain $SWARM_NODE_ID" > /dev/null
+ssh `make swarm-manager` "docker node update --availability drain $SWARM_NODE_ID"
 
 echo "Stopping containers on node"
 STOPPED_COUNT=$(ssh ec2-user@$IP 'docker stop --time 120 `docker ps -q` 2>/dev/null | wc -l' || true)

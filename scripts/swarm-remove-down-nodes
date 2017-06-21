@@ -1,0 +1,14 @@
+#! /bin/bash
+
+set -e
+
+CMD_FIND_NODES='docker node inspect --format "{{.Status.State}}:{{.ID}}" $(docker node ls -q) | grep "^down" | cut -d ":" -f2'
+
+NODES=$(ssh `make access-manager-instance` $CMD_FIND_NODES)
+
+echo "Demoting: $NODES"
+
+ssh `make swarm-manager` "docker node demote $NODES"
+
+echo "Removing: $NODES"
+ssh `make swarm-manager` "docker node rm $NODES"
