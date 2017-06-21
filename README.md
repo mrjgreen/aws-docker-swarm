@@ -43,7 +43,7 @@ The make file included from `makefiles/swarm.tf` has some helper for applying yo
 
 ## Concepts
 
-![AWS Resource Diagram](/images/aws-resource-diagram.svg "AWS Resource Diagram")
+![AWS Resource Diagram](/images/aws-resource-diagram.png "AWS Resource Diagram")
 
 > Note, the `make` commands shown will only work once you have created your swarm using the steps above
 
