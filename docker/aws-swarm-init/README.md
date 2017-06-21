@@ -11,8 +11,7 @@ Adding new nodes to the cluster requires information provided by the first manag
 
 This docker container wraps a simple python script which uses an S3 bucket to store the state of the swarm once it's created, or creates a new swarm if no state already exists in the bucket.
 
-
-## Running
+## Installation
 
 ##### On AWS EC2
 
