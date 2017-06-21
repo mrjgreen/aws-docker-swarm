@@ -15,10 +15,9 @@ class S3Discovery:
     def __init__(self, bucket):
         self.client = boto3.client('s3')
         self.bucket = bucket
-        self.prefix = "managers"
 
-    def _list_managers(self):
-        res = self.client.list_objects(Bucket=self.bucket, Prefix=self.prefix)
+    def _list_objects(self, path):
+        res = self.client.list_objects(Bucket=self.bucket, Prefix=path)
         if 'Contents' in res:
             return res['Contents']
         return []
@@ -26,6 +25,9 @@ class S3Discovery:
     def _get_object(self, key):
         obj = self.client.get_object(Bucket=self.bucket, Key=key)
         return obj["Body"].read()
+
+    def _put_object(self, key, body):
+        self.client.put_object(Bucket=self.bucket, Key=key, Body=body, ServerSideEncryption='AES256')
 
     def _object_exists(self, key):
         try:
@@ -36,7 +38,7 @@ class S3Discovery:
 
     def list_managers(self):
         while True:
-            items = self._list_managers()
+            items = self._list_objects("managers")
             if len(items):
                 log("Found %d managers, waiting 5 seconds before continuing..." % len(items))
                 time.sleep(5) # Give S3 time to syndicate all objects before next request
@@ -46,7 +48,7 @@ class S3Discovery:
 
     def add_manager(self, ip):
         data = {"ip": ip}
-        self.client.put_object(Bucket=self.bucket, Key="managers/%s" % ip, Body=json.dumps(data))
+        self._put_object("managers/%s" % ip, json.dumps(data))
 
     def get_tokens(self):
         return json.loads(self._get_object("tokens"))
@@ -56,7 +58,7 @@ class S3Discovery:
         return tokens[role]
 
     def set_tokens(self, data):
-        self.client.put_object(Bucket=self.bucket, Key="tokens", Body=json.dumps(data))
+        self._put_object("tokens", json.dumps(data))
 
     def get_initial_lock(self, label = "lock"):
 
@@ -67,7 +69,7 @@ class S3Discovery:
 
         lock_set = "%s: %f" % (label, random())
 
-        self.client.put_object(Bucket=self.bucket, Key="manager-init-lock", Body=lock_set)
+        self._put_object("manager-init-lock", lock_set)
 
         # Make sure we give other nodes time to check and write their IP
         # if our IP is still the one in the file after 5 seconds, then we are probably okay

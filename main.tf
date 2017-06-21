@@ -21,6 +21,13 @@ module "vpc" {
   cidr = "${ var.vpc_cidr_block }"
 }
 
+module "s3-vpc-endpoint" {
+  source = "./modules/vpc/s3-endpoint"
+  vpc_id = "${module.vpc.id}"
+  region = "${var.region}"
+  route_table_ids = [ "${module.vpc.route-table-id-main}" ]
+}
+
 module "manager" {
   source = "./modules/swarm-manager"
 
