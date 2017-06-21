@@ -1,0 +1,87 @@
+version: "3"
+services:
+  proxy-listener:
+    image: vfarcic/docker-flow-swarm-listener
+    networks:
+    - loadbalancer
+    environment:
+    - DF_NOTIFY_CREATE_SERVICE_URL=http://proxy:8080/v1/docker-flow-proxy/reconfigure
+    - DF_NOTIFY_REMOVE_SERVICE_URL=http://proxy:8080/v1/docker-flow-proxy/remove
+    volumes:
+    - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+  proxy:
+    image: vfarcic/docker-flow-proxy
+    ports:
+    - 80:80
+    networks:
+    - loadbalancer
+    environment:
+    - LISTENER_ADDRESS=proxy-listener
+    - MODE=swarm
+    - STATS_URI=/proxy-stats
+    - STATS_USER=admin
+    - STATS_PASS=Adminpass123
+    deploy:
+      replicas: 3
+
+  app:
+    image: mrjgreen/node-mongo-app
+    environment:
+    - HTTP_PORT=1234 # Doesn't matter what we choose as long as it matches 'deploy:labels:com.df.port'
+    - MONGO_DSN=mongodb://rs1,rs2,rs3/mydb?replicaSet=rs0
+    networks:
+    - loadbalancer
+    - database
+    deploy:
+      replicas: 6
+      labels:
+      - "com.df.notify=true"
+      - "com.df.distribute=true"
+      - "com.df.port=1234"
+      - "com.df.serviceDomain=app.joeg.uk"
+
+  rs1:
+    image: mongo:3.4
+    networks:
+    - database
+    command: mongod --noprealloc --smallfiles --replSet rs0 --dbpath /data/db --nojournal --oplogSize 16 --noauth
+
+  rs2:
+    image: mongo:3.4
+    networks:
+    - database
+    command: mongod --noprealloc --smallfiles --replSet rs0 --dbpath /data/db --nojournal --oplogSize 16 --noauth
+
+  rs3:
+    image: mongo:3.4
+    networks:
+    - database
+    command: mongod --noprealloc --smallfiles --replSet rs0 --dbpath /data/db --nojournal --oplogSize 16 --noauth
+
+  rs:
+    image: mongo:3.4
+    networks:
+    - database
+    deploy:
+      restart_policy:
+        condition: none
+    command: "mongo --host rs1 --eval 'rs.initiate({ _id: \"rs0\", version: 1, members: [ { _id: 0, host : \"rs1\" }, { _id: 1, host : \"rs2\" }, { _id: 2, host : \"rs3\" } ] })'"
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    stop_grace_period: 1m30s
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  loadbalancer:
+  database:

@@ -1,0 +1,5 @@
+.terraform
+.terraform-output-cache
+terraform.tfplan
+terraform.tfstate.backup
+terraform.tfstate
