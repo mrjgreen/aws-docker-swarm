@@ -15,7 +15,7 @@ This docker container wraps a simple python script which uses an S3 bucket to st
 
 ##### On AWS EC2
 
-You should configure the instances' IAM roles to have [access to the bucket as shown here](##IAM Policy)).
+You should configure the instance IAM roles to have [access to the bucket as shown here](##IAM Policy)).
 
 ```
 NODE_IP=$(curl -fsS http://instance-data/latest/meta-data/local-ipv4)
