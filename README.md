@@ -67,7 +67,7 @@ You can have as many or as few worker groups as you wish, running in as many dif
 
 In order to provide automatic swarm initialization we run a one shot docker container on instance launch, which uses an S3 Bucket to find active managers and join tokens.
 
-[See here for more information on how this works.](docker/aws-swarm-init/README.md)
+[See here for more information on how this works.](docker/aws-swarm-init)
 
 ### DNS Records (Route 53)
 
