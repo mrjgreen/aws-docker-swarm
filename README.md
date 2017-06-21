@@ -55,13 +55,13 @@ You can show all available instances and the groups to which they belong using:
 
 ##### Manager Group
 
-For a functioning cluster, you must run a manager group, which by default consists of 3 instances which join the cluster as swarm managers.
+For a functioning cluster, you must run a manager group which by default consists of 3 swarm manager instances, one in each availability zone.
 
     make swarm-managers
 
 ##### Worker Groups
 
-You can have as many or as few worker groups as you wish, running in as many different configurations as you choose. Worker groups join the cluster as swarm workers.
+You can have as many or as few worker groups as you wish, running in as many different configurations as you choose. Instances in worker groups join the cluster as swarm workers. By default this terraform config creates a single worker group running 1 instance.
 
 ### Docker Swarm Discovery
 
@@ -71,13 +71,13 @@ In order to provide automatic swarm initialization we run a one shot docker cont
 
 ### DNS Records (Route 53)
 
-In order to allow external addressing of nodes in the cluster, you can configure an autoscaling group to automatically maintain a route 53 DNS record.
+To allow external addressing of nodes in the cluster, you can configure an autoscaling group to automatically maintain a route 53 DNS record. By default only the manager group has a DNS record configured.
 
 This record will be updated on the following autoscaling events:
 
- * Instance Launch
+ * Instance Launched
  * Instance Terminated
- * Scale down&ast;
+ * Autoscaling Group Scale Down&ast;
 
 &ast;*NOTE:* An Autoscaling Lifecycle Hook is configured on scale down events, to delay the termination of the instance until (DNS TTL + 120) seconds has elapsed from the time of the event.
 

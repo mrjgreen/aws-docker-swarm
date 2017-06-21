@@ -28,7 +28,7 @@ instance_type="t2.nano"
 volume_size=12
 
 # Set the number of instances to run as managers
-swarm_manager_count=1
+swarm_manager_count=3
 
 # Set the number of instances to run as workers
 swarm_worker_count=1
