@@ -20,7 +20,7 @@ You should configure the instance IAM roles to have [access to the bucket as sho
 ```
 NODE_IP=$(curl -fsS http://instance-data/latest/meta-data/local-ipv4)
 SWARM_DISCOVERY_BUCKET="my-bucket"
-ROLE="worker|manager"
+ROLE="manager" # or "worker"
 
 docker run -d --restart on-failure:5 \
 -e SWARM_DISCOVERY_BUCKET=${SWARM_DISCOVERY_BUCKET} \
@@ -37,7 +37,7 @@ You should configure the keys with IAM [access to the bucket as shown here](##IA
 ```
 NODE_IP="10.0.0.2" # Set to the public/private IP your node will communicate on
 SWARM_DISCOVERY_BUCKET="my-bucket"
-ROLE="worker|manager"
+ROLE="manager" # or "worker"
 AWS_ACCESS_KEY_ID="MY_AWS_ACCESS_KEY_ID"
 AWS_SECRET_ACCESS_KEY="MY_AWS_SECRET_ACCESS_KEY"
 
