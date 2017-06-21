@@ -31,7 +31,7 @@ When you are happy, execute the plan generated above
 
 Provided you have added an SSH key, you will be able access an available swarm manager using the command:
 
-    ssh `make access-manager-instance`
+    make swarm-ssh
 
 ### Deploying the Example Application
 
@@ -51,13 +51,13 @@ The swarm is composed of multiple EC2 autoscaling groups performing various role
 
 You can show all available instances and the groups to which they belong using:
 
-    make list-instances
+    make swarm-instances
 
 ##### Manager Group
 
 For a functioning cluster, you must run a manager group, which by default consists of 3 instances which join the cluster as swarm managers.
 
-    make list-manager-instances
+    make swarm-managers
 
 ##### Worker Groups
 
@@ -94,17 +94,22 @@ The steps to do this are:
 
 &ast;This will automatically trigger the notification to update any associated DNS records. If this is the case the instance will remain in the group until a period of (DNS TTL + 120) has expired.
 
-    make remove-instance ID=<instance-id>
+    make swarm-remove-instance ID=<instance-id>
 
 ##### Hard Termination
 If for any reason you need to force a node out of the cluster you can simply terminate it. The autoscaling group will automatically provision a new host and the swarm will automatically rebalance the containers the node was running.
+
+##### Removing "down" Nodes
+
+Once instance have been removed from the swarm, the node is show in a "down" state in the `docker node ls` output. You can remove these nodes using the make task:
+
+    make swarm-tidy
 
 ## Destroying the swarm
 
 WARNING: this will destroy ALL infrastructure elements with no method of retrieving data or configuration.
 
     make clean
-
 
 ## TODO
 
