@@ -73,6 +73,8 @@ In order to provide automatic swarm initialization we run a one shot docker cont
 
 ### DNS Records (Route 53)
 
+TODO: Look into https://aws.amazon.com/about-aws/whats-new/2017/12/amazon-route-53-releases-auto-naming-api-name-service-management/ to see if it can replace this requirement.
+
 To allow external addressing of nodes in the cluster, you can configure an autoscaling group to automatically maintain a route 53 DNS record. By default only the manager group has a DNS record configured.
 
 This record will be updated on the following autoscaling events:
